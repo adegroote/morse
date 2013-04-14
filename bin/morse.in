@@ -39,11 +39,6 @@ try:
 except ImportError:
     import ConfigParser as configparser #python 2.x
 
-#Python version must be egal or bigger than...
-MIN_PYTHON_VERSION = "3.2"
-#Python version must be smaller than...
-STRICT_MAX_PYTHON_VERSION = "4.0"
-
 try:
     import argparse
 except ImportError:
@@ -118,13 +113,11 @@ def check_blender_python_version(blender_path):
     current Python version bundled with Blender
     """
     env = os.environ
-    env["PYTHONPATH"] = os.pathsep.join(sys.path)
-
 
     tmpF = tempfile.NamedTemporaryFile(delete = False)
     try:
         tmpF.write(b"import sys\n")
-        tmpF.write(b"print('>>>' + '.'.join((str(x) for x in sys.version_info[:2])))\n")
+        tmpF.write(b"print('>>>' + '.'.join((str(x) for x in sys.version_info[:3])))\n")
         tmpF.write(b"print('###%s' % sys.path)\n")
         tmpF.flush()
         tmpF.close()
@@ -136,7 +129,7 @@ def check_blender_python_version(blender_path):
         ).communicate() # get only stdout
         stdout = output[0].decode()
         stderr = output[1].decode()
-        version = stdout.split('>>>')[1][0:3]
+        version = stdout.split('>>>')[1][0:5]
         pythonpath = stdout.split('###')[1][0:-1]
         logger.info("Checking version of Python within Blender " + blender_path + \
                         "... Found v." + version)
@@ -310,16 +303,17 @@ def check_setup():
     python_version = check_blender_python_version(blender_exec)
     if python_version == None:
        logger.warn("Blender's Python version could not be determined. Crossing fingers.")        
-    elif not (python_version.split('.') >= MIN_PYTHON_VERSION.split('.') and 
-            python_version.split('.') < STRICT_MAX_PYTHON_VERSION.split('.')):
-        logger.error("Blender is using Python " + python_version + \
-        ". Python  >= " + MIN_PYTHON_VERSION + " and < " + STRICT_MAX_PYTHON_VERSION + \
-        " is required to run MORSE. Note that Blender usually provides its own " + \
-        "Python runtime that may differ from the system one.")
-        raise MorseError("Bad Python version")
     else:
-        logger.info("Blender is using Python " + python_version + \
-        ". Alright.")
+        our_python_version = '.'.join((str(x) for x in sys.version_info[:3]))
+        if (python_version != our_python_version):
+           logger.error("Blender is using Python " + python_version + \
+                   " Python but MORSE is configured for Python " + \
+                   our_python_version + "! Check your MORSE configuration "
+                   "or the selected Blender version.")
+           raise MorseError("Bad Python version")
+        else:
+            logger.info("Blender and Morse are using Python " + \
+            python_version + ". Alright.")
 
 def get_config_file():
     config_path = os.path.expanduser("~/.morse")
