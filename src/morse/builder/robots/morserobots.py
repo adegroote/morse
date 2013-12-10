@@ -8,6 +8,12 @@ class Morsy(Robot):
         Robot.__init__(self, "morsy", name)
         self.properties(classpath = "morse.robots.morsy.Morsy")
 
+        self.set_dynamic()
+        mesh = self.get_child('morsy_mesh')
+        mesh.game.physics_type = 'NO_COLLISION'
+
+        self.set_collision_bounds()
+
     def set_color(self, color = (0.0, 0.0, 0.8)):
         """
         Allows to change Morsy's body color.
@@ -26,11 +32,19 @@ class B21(Robot):
         Robot.__init__(self, "b21", name)
         self.properties(classpath = "morse.robots.b21.B21")
 
+        self.set_rigid_body()
+        self.set_collision_bounds()
+
+        collision = self.get_child('b21_collision')
+        collision.game.physics_type = 'STATIC'
+
+
 # see data/robots/environment.blend and src/morse/robots/environment.py
 class FakeRobot(RobotCreator):
     def __init__(self, name=None):
         RobotCreator.__init__(self, name,
             "morse.robots.environment.Environment", "environment")
+        self.set_no_collision()
 
 class Hummer(Robot):
     def __init__(self, name=None):
@@ -43,6 +57,13 @@ class Jido(Robot):
     def __init__(self, name=None):
         Robot.__init__(self, "jido", name)
         self.properties(classpath = "morse.robots.jido.Jido")
+
+        self.set_dynamic()
+        self.set_collision_bounds()
+        self._bpy_object.game.radius = 0.01
+
+        mesh = self.get_child('JidoBase')
+        mesh.game.physics_type = 'STATIC'
 
 # see human.py
 #class MocapHuman(Robot):
@@ -70,6 +91,7 @@ class QUAD2012(Robot):
         Robot.__init__(self, "quadrotor", name)
         self.properties(classpath = "morse.robots.quadrotor.Quadrotor")
         # Collision - Motion Game Logic
+        self.set_no_collision()
 
 class Quadrotor(Robot):
     def __init__(self, name=None):
@@ -82,10 +104,9 @@ class RMax(Robot):
         self.properties(classpath = "morse.robots.rmax.RMax",
                         FreeZ = True)
 
+        self.set_rigid_body()
         rotor = self.get_child('Rotor')
         rotor.game.physics_type = 'NO_COLLISION'
-
-        self.set_rigid_body()
 
 class SegwayRMP400(WheeledRobot):
     def __init__(self, name=None):
@@ -100,8 +121,10 @@ class SegwayRMP400(WheeledRobot):
 class Submarine(Robot):
     def __init__(self, name=None):
         Robot.__init__(self, "submarine", name)
-        self.properties(classpath = "morse.robots.submarine.Submarine")
-        # Keys Game Logic
+        self.properties(classpath = "morse.robots.submarine.Submarine",
+                        FreeZ = True)
+        self.set_rigid_body()
+        self.set_collision_bounds()
 
 class Victim(Robot):
     def __init__(self, name=None):
