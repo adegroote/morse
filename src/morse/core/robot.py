@@ -15,6 +15,7 @@ class Robot(morse.core.object.Object):
                 simulator will automatically compensate it. This setting \
                 is useful for non-realistic model flying or submarine \
                 robot ')
+    add_property('_is_ground_robot', False, 'GroundRobot', 'bool', '')
 
     # Make this an abstract class
     __metaclass__ = ABCMeta
@@ -68,6 +69,8 @@ class Robot(morse.core.object.Object):
             parent.applyMovement(linear_speed, True)
             parent.applyRotation(angular_speed, True)
         elif kind == 'Velocity':
+            if self._is_ground_robot:
+                linear_speed[2] = parent.localLinearVelocity[2]
             # Workaround against 'strange behaviour' for robot with
             # 'Dynamic' Physics Controller. [0.0, 0.0, 0.0] seems to be
             # considered in a special way, i.e. is basically ignored.
