@@ -100,12 +100,11 @@ class Camera(morse.core.sensor.Sensor):
         copy_pose(self._morse_scene.objects[obj.name], obj)
 
     def _update_scene(self):
-        for obj in self._scene.objects:
-            if obj.name != '__default__cam__':
-                try:
-                    self._update_pose(obj)
-                except Exception as e:
-                    logger.warning(str(e))
+        for obj in self._scene_syncable_objects:
+            try:
+                self._update_pose(obj)
+            except Exception as e:
+                logger.warning(str(e))
 
     def _setup_video_texture(self):
         """ Prepare this camera to use the bge.texture module.
@@ -143,6 +142,11 @@ class Camera(morse.core.sensor.Sensor):
         logger.info("Scene %s from %s"% (self.scene_name, repr(scene_map.keys()) ) )
         self._scene = scene_map[self.scene_name]
         self._morse_scene = scene_map['S.MORSE_LOGIC']
+        self._scene_syncable_objects = []
+        for obj in self._scene.objects:
+            if obj.name != '__default__cam__' and \
+                    obj.parent is None and obj.groupObject is None:
+                self._scene_syncable_objects.append(obj)
 
         # Link the objects using bge.texture
         if not blenderapi.hascameras():
