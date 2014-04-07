@@ -129,7 +129,7 @@ class PTUPosture(SensorCreator):
         SensorCreator.__init__(self, name)
 
 class SearchAndRescue(SensorCreator):
-    _classpath = "morse.sensors.search_and,_rescue.SearchAndRescue"
+    _classpath = "morse.sensors.search_and_rescue.SearchAndRescue"
 
     def __init__(self, name=None):
         SensorCreator.__init__(self, name)
