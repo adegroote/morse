@@ -1,11 +1,10 @@
 import logging; logger = logging.getLogger("morse.ros")
 import re
 try:
-    import roslib
+    import rospy
 except ImportError as error:
     logger.error("Could not find ROS. source setup.[ba]sh ?")
     raise error
-import rospy
 
 from std_msgs.msg import String, Header
 from geometry_msgs.msg import TransformStamped
