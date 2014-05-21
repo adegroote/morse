@@ -250,15 +250,13 @@ class Armature(ActuatorCreator):
                                     name, 
                                     action = ComponentCreator.USE_BLEND,
                                     blendfile = model_name,
-                                    blendobject = armature_name,
-                                    make_morseable = False)
+                                    blendobject = armature_name)
 
         else:
             ActuatorCreator.__init__(self, 
                                 name, 
                                 action = ComponentCreator.LINK_EXISTING_OBJECT,
-                                blendobject = armature_name,
-                                make_morseable = False)
+                                blendobject = armature_name)
 
 
         self.ik_targets = []
