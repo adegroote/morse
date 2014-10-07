@@ -215,6 +215,14 @@ class Robot(Component):
         self._bpy_object.game.collision_bounds_type = 'CONVEX_HULL'
         self._bpy_object.game.use_collision_compound = True
 
+    def make_grasper(self, obj_name):
+        obj = bpymorse.get_object(obj_name)
+        bpymorse.select_only(obj)
+        bpymorse.add_sensor(type = 'NEAR')
+        sens = obj.game.sensors[-1]
+        sens.name = 'Near'
+
+
 class GroundRobot(Robot):
     def __init__(self, filename, name):
         Robot.__init__(self, filename, name)
