@@ -221,6 +221,12 @@ class Robot(Component):
         bpymorse.add_sensor(type = 'NEAR')
         sens = obj.game.sensors[-1]
         sens.name = 'Near'
+        sens.distance = 5.0
+        sens.reset_distance = 0.075
+        sens.property = "Graspable"
+        bpymorse.add_controller()
+        contr = obj.game.controllers[-1]
+        contr.link(sensor = sens)
 
 
 class GroundRobot(Robot):
