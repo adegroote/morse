@@ -424,7 +424,8 @@ class Environment(Component):
         :param strategy:  the strategy to choose. Must be one of value
         of :py:class:`morse.builder.TimeStrategies`
         """
-        if strategy == TimeStrategies.FixedSimulationStep:
+        if strategy == TimeStrategies.FixedSimulationStep or \
+           strategy == TimeStrategies.FixedSimulationStepExternalTrigger:
             bpymorse.get_context_scene().game_settings.use_frame_rate = 0
         elif strategy == TimeStrategies.BestEffort:
             bpymorse.get_context_scene().game_settings.use_frame_rate = 1

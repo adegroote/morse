@@ -17,6 +17,9 @@ import time
 from morse.core import blenderapi
 from morse.helpers.statistics import Stats
 
+import socket
+import select
+
 class BestEffortStrategy:
     def __init__ (self):
         self.time = time.time()
@@ -104,8 +107,57 @@ class FixedSimulationStepStrategy:
             self._last_time = time.time()
             self._stat_jitter.update(ds)
 
+class FixedSimulationStepExternalTriggerStrategy(FixedSimulationStepStrategy):
+    SYNC_PORT = 5000
+
+    def __init__(self):
+        FixedSimulationStepStrategy.__init__(self)
+        self._init_trigger()
+
+    def _init_trigger(self):
+        self._client =  None
+        self._server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._server.bind(('', self.SYNC_PORT))
+        self._server.listen(1)
+
+    def _wait_trigger(self):
+        # If there is some client, just wait on it
+        if self._client:
+            logger.debug("Waiting trigger")
+            msg = self._client.recv(2048)
+            if not msg: #deconnection of client
+                self._client = None
+        else:
+        # Otherwise, we just check if there is some client waiting
+        # If there is no client, we do not block for the moment to avoid
+        # weird interaction at the startup
+            try:
+                inputready, _, _ = select.select([self._server], [], [], 0)
+            except select.error:
+                pass
+            except socket.error:
+                pass
+
+            if self._server in inputready:
+                self._client, _ = self._server.accept()
+
+    def _end_trigger(self):
+        self._client.close()
+        self._server.shutdown(socket.SHUT_RDWR)
+
+    def __del__(self):
+        self._end_trigger()
+
+    def update(self):
+        self._wait_trigger()
+        FixedSimulationStepStrategy.update(self)
+
+    def name(self):
+        return 'Fixed Simulation Step with external trigger'
+
 class TimeStrategies:
-    (BestEffort, FixedSimulationStep) = range(2)
+    (BestEffort, FixedSimulationStep, FixedSimulationStepExternalTrigger) = range(3)
 
     internal_mapping = {
         BestEffort:
@@ -117,6 +169,11 @@ class TimeStrategies:
             { "impl": FixedSimulationStepStrategy,
               "python_repr": b"TimeStrategies.FixedSimulationStep",
               "human_repr": "Fixed Simulation Step"
+            },
+        FixedSimulationStepExternalTrigger:
+            { "impl": FixedSimulationStepExternalTriggerStrategy,
+              "python_repr": b"TimeStrategies.FixedSimulationStepExternalTrigger",
+              "human_repr": "Fixed Simulation Step with an external trigger"
             }
         }
 
