@@ -466,6 +466,7 @@ class Morse(object):
         else:
             logger.debug("Morse thread was already started")
         self.executor = MorseExecutor(max_workers = 10, morse = self)
+        self.ticker = None
         self.initialize_api()
 
     def is_up(self):
@@ -650,6 +651,14 @@ class Morse(object):
         precision of time, and the frequency of simulator
         """
         return self.rpc("time", "now")
+
+    def tick(self):
+        """ 
+        Trigger the Morse clock (if needed)
+        """
+        if not self.ticker:
+            self.ticker = Stream(self.host, 5000)
+        self.ticker.publish('foo')
 
     #### with statement ####
     def __enter__(self):
