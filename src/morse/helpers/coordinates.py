@@ -23,8 +23,8 @@ class CoordinateConverter:
           [[-sin(P[0]), cos(P[0]), 0],
            [-cos(P[0]) * sin(P[1]), -sin(P[1]) * sin(P[0]), cos(P[1])],
            [cos(P[1]) * cos(P[0]), cos(P[1]) * sin(P[0]), sin(P[1])]]
-        self._rot_ecef_ltp = numpy.matrix(_rot)
-        self._rot_ltp_ecef = self._rot_ecef_ltp.T
+        self._rot_ltp_ecef = numpy.matrix(_rot)
+        self._rot_ecef_ltp = self._rot_ltp_ecef.T
 
     @staticmethod
     def instance():
