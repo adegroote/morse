@@ -41,9 +41,9 @@ class CoordinatesToGeodetic(Geodeticmodifier):
 
             logger.debug("%s => %s" % (xe, xt))
 
-            self.data['x'] = degrees(xt[0])
-            self.data['y'] = degrees(xt[1])
-            self.data['z'] = xt[2]
+            self.data['x'] = degrees(xt[0, 0])
+            self.data['y'] = degrees(xt[0, 1])
+            self.data['z'] = xt[0, 2]
         except KeyError as detail:
             self.key_error(detail)
 
