@@ -10,8 +10,6 @@ if(COMMAND cmake_policy)
 	endif()
 endif()
 
-
-
 option(BUILD_CORE_SUPPORT "Build and install morse core" ON)
 option(BUILD_DOC_SUPPORT "Build and install morse documentation (Requiere Sphinx)" OFF)
 
@@ -24,7 +22,6 @@ option(BUILD_HLA_SUPPORT "Build HLA middleware support. Also used for distribute
 option(PYMORSE_SUPPORT "Build and install the Python bindings for MORSE." ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/config/)
-find_package(PkgConfig REQUIRED)
 
 set(PythonInterp_FIND_VERSION 3.3)
 find_package(PythonInterp REQUIRED)
